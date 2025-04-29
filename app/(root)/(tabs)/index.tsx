@@ -20,6 +20,7 @@ import { Card, FeaturedCard } from "@/components/Cards";
 import { useAppwrite } from "@/lib/useAppwrite";
 import { useGlobalContext } from "@/lib/global-provider";
 import { getLatestProperties, getProperties } from "@/lib/appwrite";
+import seed from "@/lib/seed"; // ✅ SEED FONKSİYONUNU İÇE AKTARDIK
 
 const Home = () => {
   const { user } = useGlobalContext();
@@ -45,12 +46,14 @@ const Home = () => {
     skip: true,
   });
 
+  // ✅ Uygulama ilk açıldığında seed işlemini yapıyoruz
   useEffect(() => {
-    refetch({
-      filter: params.filter!,
-      query: params.query!,
-      limit: 6,
-    });
+    seed();
+  }, []);
+
+  // ✅ Parametre değişince verileri refetch ediyoruz
+  useEffect(() => {
+    refetch();
   }, [params.filter, params.query]);
 
   const handleCardPress = (id: string) => router.push(`/properties/${id}`);
@@ -78,17 +81,20 @@ const Home = () => {
           <View className="px-5">
             <View className="flex flex-row items-center justify-between mt-5">
               <View className="flex flex-row">
-                <Image
-                  source={{ uri: user?.avatar }}
-                  className="size-12 rounded-full"
-                />
-
+                {user?.avatar ? (
+                  <Image
+                    source={{ uri: user.avatar }}
+                    className="size-12 rounded-full"
+                  />
+                ) : (
+                  <View className="size-12 rounded-full bg-gray-200" />
+                )}
                 <View className="flex flex-col items-start ml-2 justify-center">
                   <Text className="text-xs font-rubik text-black-100">
                     Good Morning
                   </Text>
                   <Text className="text-base font-rubik-medium text-black-300">
-                    {user?.name}
+                    {user?.name ? user.name : "Guest"}
                   </Text>
                 </View>
               </View>
@@ -130,8 +136,6 @@ const Home = () => {
               )}
             </View>
 
-            {/* <Button title="seed" onPress={seed} /> */}
-
             <View className="mt-5">
               <View className="flex flex-row items-center justify-between">
                 <Text className="text-xl font-rubik-bold text-black-300">
@@ -153,4 +157,4 @@ const Home = () => {
   );
 };
 
-export default Home; 
+export default Home;

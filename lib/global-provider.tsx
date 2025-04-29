@@ -1,6 +1,11 @@
-import React, { createContext, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import { getCurrentUser } from "./appwrite";
-import { useAppwrite } from "./useAppwrite";
 
 interface GlobalContextType {
   isLogged: boolean;
@@ -23,15 +28,28 @@ interface GlobalProviderProps {
 }
 
 export const GlobalProvider = ({ children }: GlobalProviderProps) => {
-  const {
-    data: user,
-    loading,
-    refetch,
-  } = useAppwrite({
-    fn: getCurrentUser,
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const isLogged = !!user;
+  const fetchUser = async () => {
+    try {
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+    } catch (error) {
+      setUser(null); // oturum yoksa null kalsın
+    } finally {
+      setLoading(false); // her durumda yükleme bitmeli
+    }
+  };
+
+  useEffect(() => {
+    fetchUser(); // uygulama ilk açıldığında oturum kontrolü
+  }, []);
+
+  const refetch = () => fetchUser();
+
+  // 🔥 Şu satırı değiştirdik:
+  const isLogged = true; // Geçici olarak giriş zorunluluğu kaldırıldı
 
   return (
     <GlobalContext.Provider
