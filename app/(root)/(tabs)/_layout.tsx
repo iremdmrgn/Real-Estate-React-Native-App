@@ -1,6 +1,7 @@
-import { Tabs } from "expo-router";
-import { Image, ImageSourcePropType, Text, View } from "react-native";
-
+import { Tabs, Redirect } from "expo-router";
+import { Image, ImageSourcePropType, Text, View, ActivityIndicator } from "react-native";
+import { useGlobalContext } from "@/lib/global-provider";
+import { SafeAreaView } from "react-native-safe-area-context";
 import icons from "@/constants/icons";
 
 const TabIcon = ({
@@ -32,6 +33,20 @@ const TabIcon = ({
 );
 
 const TabsLayout = () => {
+  const { loading, isLogged } = useGlobalContext();
+
+  if (loading) {
+    return (
+      <SafeAreaView className="bg-white h-full flex justify-center items-center">
+        <ActivityIndicator size="large" />
+      </SafeAreaView>
+    );
+  }
+
+  if (!isLogged) {
+    return <Redirect href="/sign-in" />;
+  }
+
   return (
     <Tabs
       screenOptions={{

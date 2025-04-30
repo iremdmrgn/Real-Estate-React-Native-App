@@ -49,7 +49,8 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
   const refetch = () => fetchUser();
 
   // 🔥 Şu satırı değiştirdik:
-  const isLogged = true; // Geçici olarak giriş zorunluluğu kaldırıldı
+  const isLogged = !!user;
+// Geçici olarak giriş zorunluluğu kaldırıldı
 
   return (
     <GlobalContext.Provider
